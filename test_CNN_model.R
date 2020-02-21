@@ -53,6 +53,20 @@ inXandYnotNa = setdiff(inXandY,raster_with_na)
 
 Yarray= newBirdsArray[,dimnames(newBirdsArray)[2][[1]]%in%inXandYnotNa]
 
+#Modification of Yarray
+#For binomial analyses only
+Yarray[Yarray > 0] <- 1
+############################
+
+#To subset to species identified as good indicators species of landscape (forest) changes
+#Positive (forest "lovers")
+Yarray <- Yarray[c("PARATE","PHYSIB","DENMED","REGREG","PARPAL","COCCOC","CERFAM"),]
+#Negative (forest "haters")
+Yarray <- Yarray[c("PERPER","ALAARV","MOTFLA"),]
+#Both
+Yarray <- Yarray[("PARATE","PHYSIB","DENMED","REGREG","PARPAL","COCCOC","CERFAM",
+                 "PERPER","ALAARV","MOTFLA"),]
+
 Xarray= raster_array[,,dimnames(raster_array)[3][[1]]%in%inXandYnotNa] 
 
 dim(Xarray) = c(dim(Xarray)[1],dim(Xarray)[2],1,dim(Xarray)[3])
@@ -73,10 +87,10 @@ MainDevice = mx.cpu()
 # grouped and named by model parts. ex : "conv1_weight"
 get.all.gradients = function(model,X,y,executor,X_name="data",y_name="label",
                              device=MainDevice){
-  # on lui donne les paramètres du modèle 
+  # on lui donne les paramÃ¨tres du modÃ¨le 
   mx.exec.update.arg.arrays(executor , model$arg.params,match.name = T )
   mx.exec.update.aux.arrays(executor, model$aux.params, match.name=T)
-  # on lui donne les données d'entrée (et de sortie pour la loss)
+  # on lui donne les donnÃ©es d'entrÃ©e (et de sortie pour la loss)
   command = paste('mx.exec.update.arg.arrays(executor,list(',
                   X_name,
                   '=mx.nd.array(X),',
